@@ -1,7 +1,6 @@
 import customtkinter as ctk
 import app_function as af
 import json
-import os
 filename = "command_list.json"
 #input json file 
 def loading_json(user_command, ter_command):
@@ -34,10 +33,39 @@ def customize_desktop():
     #function to get info
     def getting_gen_entry():
         cont = gen_entry.get()
-        loading_json("activating command", cont)
+        if cont == "":
+            cont = 'waking up'
+        else:
+            loading_json("activating command", cont)
+            gen_entry.delete(0, 'end')
     def getting_exit_entry():
-        cont = exit_entry.get()
-        loading_json("exiting command", cont)
+        if cont == "":
+           cont = "stop right now"
+        else: 
+            cont = exit_entry.get()
+            loading_json("exiting command", cont)
+            exit_entry.delete(0, 'end')
+    def getting_add_entry():
+        if add_your_command == "" or add_ter_command == "":
+            print("Unsuccessfully, you may have not filled yet")
+        else:
+            add_your_command = add_your_entry.get()
+            add_ter_command = add_ter_entry.get()
+            loading_json(add_your_command, add_ter_command)
+            add_your_entry.delete(0, 'end')
+            add_ter_entry.delete(0, 'end')
+    def getting_remove_entry():
+        remove_command = remove_entry.get()
+        with open(filename, 'r', encoding='utf-8') as file:
+            current_data = json.load(file)
+        if remove_command in current_data:
+            current_data.pop(remove_command, None)
+            remove_entry.delete(0, 'end')
+        else:
+            print("command doesn't exist, try again")
+        with open(filename, 'w', encoding= 'utf-8') as file:
+            json.dump(current_data, file, ensure_ascii= False, indent= 4)
+
     #notice
     notice = ctk.CTkLabel(window,
                           text= "***NOTICE: To know how to add or remove a command, " \
@@ -158,7 +186,8 @@ def customize_desktop():
                                       height= 35,
                                       corner_radius= 11,
                                       border_width= 1.5,
-                                      border_color= 'black')
+                                      border_color= 'black',
+                                      command= getting_add_entry)
     
     #frame for removing command
     remove_content = ctk.CTkLabel(window, 
@@ -186,7 +215,8 @@ def customize_desktop():
                                height= 35,
                                corner_radius= 11,
                                border_width= 1.5,
-                               border_color= 'black')
+                               border_color= 'black',
+                               command= getting_remove_entry)
 
     #list of command
     list_frame = ctk.CTkFrame(window, 

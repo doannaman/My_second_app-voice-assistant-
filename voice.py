@@ -44,13 +44,13 @@ def run_powershell(command):
         if result.stdout:
             print("Output:\n", result.stdout)
         if result.stderr:
-            speak("your command is wrong")
+            speak("your command is wrong, try again")
             print("Error:\n", result.stderr)
     except Exception as e:
         speak("your command is wrong")
         print(f"Error: {e}")
 #robot brain
-def running_robot():
+def running_robot(command_list):
         global is_begin
         robot_ear = spr.Recognizer()
         with spr.Microphone() as mic:
@@ -59,28 +59,23 @@ def running_robot():
         try:
             text = robot_ear.recognize_google(audio).lower()
             print(f"you say: '{text}'")
-            if "start chrome" in text:
-                run_powershell("Start-Process chrome")
-                speak("successfully")
-            elif "start notepad" in text:
-                run_powershell("notepad")
-            elif "start word" in text:
-                run_powershell("Start-Process winword")
-                speak("successfully")
-            elif "start excel" in text:
-                run_powershell("start excel")
-                speak("successfully")
-            elif "turn off the computer" in text:
-                run_powershell('shutdown /s /t 0')
-                speak("successfully")
+            if not command_list:
+                speak("your command list is blank, add commands first")
+                return True
             else:
-                speak("I don't understand your command, please try again or checking list of command or pronunciation")
-            is_begin = True
+                for command in command_list:
+                    if command in text:
+                        run_powershell(command_list[command])
+                        speak("successfully")
+                    else:
+                        speak("I don't understand your command, please try again or checking list of command or pronunciation")
+                    is_begin = True
         except spr.UnknownValueError:
             speak("I can't hear, please try again")
         except spr.RequestError as e:
             print(f"Error to connect API: {e}")
-def running_backend(opening_command = "waking up",
+def running_backend(listofcommand,
+                    opening_command = "waking up",
                     exiting_command = "stop right now"):
     global is_begin
     rec = KaldiRecognizer(model, 16000)
@@ -88,7 +83,7 @@ def running_backend(opening_command = "waking up",
                             channels=1, callback=audio_callback):
         while True:
             if is_begin:
-                speak(f"Hello, I'm here to help you, I'm your assistant, say {opening_command} to begin")
+                speak(f"Hello, I'm here to help you, I'm your assistant, say {opening_command} to begin or {exiting_command} to stop")
                 is_begin = False
                 rec.Reset()
                 with q.mutex:
@@ -105,7 +100,8 @@ def running_backend(opening_command = "waking up",
                 print("I'm ready to help you")
                 speak("I am ready to help you")
                 time.sleep(1)
-                running_robot()
+                if running_robot(command_list= listofcommand):
+                    break
                 rec = KaldiRecognizer(model, 16000) 
                 with q.mutex:
                     q.queue.clear()

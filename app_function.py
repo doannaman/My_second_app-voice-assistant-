@@ -17,7 +17,15 @@ def start():
         data = json.load(file)
     begin = data["activating command"]
     exit = data["exiting command"]
+    if begin == "":
+        begin = "waking up",
+    if exit == "":
+        exit = "stop right now"
+    begin_exit = ["activating command", "exiting command"]
+    cmd_list = {k:v for k,v in data.items() if k not in begin_exit}
+    print(cmd_list)
     voice.running_backend(opening_command = begin,
-                          exiting_command= exit)
+                          exiting_command= exit,
+                          listofcommand= cmd_list)
 
 

@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import app_function as af
 import json
+import os
 filename = "command_list.json"
 #input json file 
 def loading_json(user_command, ter_command):
@@ -39,21 +40,22 @@ def customize_desktop():
             loading_json("activating command", cont)
             gen_entry.delete(0, 'end')
     def getting_exit_entry():
+        cont = exit_entry.get()
         if cont == "":
            cont = "stop right now"
         else: 
-            cont = exit_entry.get()
             loading_json("exiting command", cont)
             exit_entry.delete(0, 'end')
     def getting_add_entry():
-        if add_your_command == "" or add_ter_command == "":
-            print("Unsuccessfully, you may have not filled yet")
-        else:
-            add_your_command = add_your_entry.get()
-            add_ter_command = add_ter_entry.get()
+        add_your_command = add_your_entry.get()
+        add_ter_command = add_ter_entry.get()
+        if add_your_command != "" and add_ter_command != "":
             loading_json(add_your_command, add_ter_command)
             add_your_entry.delete(0, 'end')
             add_ter_entry.delete(0, 'end')
+            add_warning.configure(text = "Successfully!!")
+            add_warning.pack(after = add_frame, pady = 5)
+            add_warning.after(5000, add_warning.pack_forget)
     def getting_remove_entry():
         remove_command = remove_entry.get()
         with open(filename, 'r', encoding='utf-8') as file:
@@ -61,10 +63,57 @@ def customize_desktop():
         if remove_command in current_data:
             current_data.pop(remove_command, None)
             remove_entry.delete(0, 'end')
+            remove_warn.configure(text = "Successfully!!")
+            remove_warn.pack(side = "left", padx =5 )
+            remove_warn.after(5000, remove_warn.pack_forget)
         else:
-            print("command doesn't exist, try again")
+            print("Unsuccessfully!!, command doesn't exist")
+            remove_warn.configure(text = "Unsuccessfully!!, command doesn't exist")
+            remove_warn.pack(side = 'left', padx = 5)
+            remove_warn.after(5000, remove_warn.pack_forget)
         with open(filename, 'w', encoding= 'utf-8') as file:
             json.dump(current_data, file, ensure_ascii= False, indent= 4)
+    def open_json():
+        os.startfile(filename)
+
+    def open_command_list():
+            cmd_list = ctk.CTkToplevel(window)
+            cmd_list.geometry('450x550+200+0')
+            cmd_list.title("List of commands")
+            cmd_list.configure(fg_color = 'white')
+            cmd_list.focus()
+            with open(filename, 'r', encoding= 'utf-8') as file:
+                cur_data = json.load(file)
+            open_text = ctk.CTkLabel(cmd_list,
+                                     text= "Opening & Exiting command:",
+                                     font= my_font)
+            open_text.pack(side = "top")
+            activating = ctk.CTkLabel(cmd_list,
+                                      text= f"activating command --> {cur_data['activating command']}",
+                                      font= my_font)
+            activating.pack(side = 'top')
+            exiting = ctk.CTkLabel(cmd_list,
+                                    text= f"exiting command --> {cur_data['exiting command']}", 
+                                    font= my_font)
+            exiting.pack(side = 'top')
+            list_of_command = ctk.CTkFrame(cmd_list,
+                                           fg_color= 'white',
+                                           border_color= 'black')
+            list_of_command.pack(side = 'top')
+            your_command = ctk.CTkLabel(list_of_command,
+                                        text = "YOUR COMMAND",
+                                        font= my_font)
+            your_command.pack(side = 'left', padx = 10)
+            ter_command = ctk.CTkLabel(list_of_command,
+                                       text = "TERMINAL COMMAND",
+                                       font= my_font)
+            ter_command.pack(side = 'right')
+            real_data = {k:v for k,v in cur_data.items() if k not in ['activating command', 'exiting command']}
+            for k,v in real_data.items():
+                key = ctk.CTkLabel(cmd_list, text = f'{k}', font = my_font)
+                key.pack(side = 'left')
+                value = ctk.CTkLabel(cmd_list, text=f'{v}', font= my_font)
+                value.pack(side = 'right')
 
     #notice
     notice = ctk.CTkLabel(window,
@@ -143,6 +192,9 @@ def customize_desktop():
     add_frame = ctk.CTkFrame(window, 
                                      bg_color= "transparent",
                                      fg_color= '#FFFFFF' )
+    add_warning = ctk.CTkLabel(window, 
+                                   text= "Successfully!!",
+                                   font= my_font,)
     sup_content = ctk.CTkLabel(add_frame, 
                                 text= "Your command" + 28 * " " + "Terminal command" ,
                                 font= my_font, 
@@ -218,6 +270,11 @@ def customize_desktop():
                                border_color= 'black',
                                command= getting_remove_entry)
 
+    #warning label for remove
+    remove_warn = ctk.CTkLabel(remove_frame,
+                               text = "Successfully!!",
+                               font= my_font)
+
     #list of command
     list_frame = ctk.CTkFrame(window, 
                                 bg_color= "transparent",
@@ -232,7 +289,8 @@ def customize_desktop():
                                    height= 35,
                                    corner_radius= 11,
                                    border_width= 1.5,
-                                   border_color= 'black')
+                                   border_color= 'black',
+                                   command= open_command_list)
 
     #Json file
     son_frame = ctk.CTkFrame(window, 
@@ -248,7 +306,8 @@ def customize_desktop():
                                        height= 35,
                                        corner_radius= 11,
                                        border_width= 1.5,
-                                       border_color= 'black')
+                                       border_color= 'black',
+                                       command= open_json)
     #Location for each part
         
         #notice label
@@ -268,7 +327,8 @@ def customize_desktop():
 
         #add command
     add_content.pack(side = 'top', anchor = 'w', pady = 10)
-    add_frame.pack(side = 'top', anchor = 'w')
+    add_frame.pack(side = 'top', anchor = 'w', pady = 10)
+    add_warning.pack_forget()
     sup_content.pack(side = 'top', anchor = 'w', padx = 60, pady = 10)
     add_your_entry.pack(padx = 10,anchor = 'w', side = 'left')
     sep_content.pack(side = 'left',  padx = 10)
@@ -280,8 +340,9 @@ def customize_desktop():
     remove_frame.pack(side = 'top', anchor = 'w', pady = 10)
     remove_entry.pack(padx = 10,anchor = 'w', side = 'left')
     remove_buttn.pack(side = 'left')
-
-        #list of command
+    remove_warn.pack_forget()
+   
+            #list of command
     list_frame.pack(side = 'top', anchor = 'w', pady = 10)
     list_content.pack(side = 'left', anchor = 'w', pady = 10, padx = 20)
     list_buttn.pack(side = 'left')
@@ -290,6 +351,7 @@ def customize_desktop():
     son_frame.pack(side = 'top', anchor = 'w', pady = 10)
     son_content.pack(side = 'left', anchor = 'w', pady = 10, padx = 20)
     son_buttn.pack(side = 'left')
+    
 #button frame
 buttn_frame = ctk.CTkFrame(root, 
                            bg_color= "transparent",

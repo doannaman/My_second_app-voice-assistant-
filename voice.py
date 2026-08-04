@@ -31,6 +31,12 @@ def speak(text):
         new_engine = pyttsx3.init()
         new_engine.say(text)
         new_engine.runAndWait()
+#mic ini
+robot_ear = spr.Recognizer()
+robot_ear.pause_threshold = 0.5
+mic = spr.Microphone()
+with mic:
+    robot_ear.adjust_for_ambient_noise(mic, duration=0.8)
 #writing code into the powershell
 def run_powershell(command):
     try:
@@ -52,9 +58,7 @@ def run_powershell(command):
 #robot brain
 def running_robot(command_list):
         global is_begin
-        robot_ear = spr.Recognizer()
-        with spr.Microphone() as mic:
-            robot_ear.adjust_for_ambient_noise(mic, duration=0.5)
+        with mic:
             audio = robot_ear.listen(mic)
         try:
             text = robot_ear.recognize_google(audio).lower()
@@ -63,12 +67,17 @@ def running_robot(command_list):
                 speak("your command list is blank, add commands first")
                 return True
             else:
+                is_flag = True
                 for command in command_list:
                     if command in text:
                         run_powershell(command_list[command])
                         speak("successfully")
-                    else:
-                        speak("I don't understand your command, please try again or checking list of command or pronunciation")
+                        is_flag = False
+                        is_begin = True
+                        break
+                if is_flag:
+                    speak("I don't understand your command, " \
+                    "please try again or checking list of command or pronunciation")
                     is_begin = True
         except spr.UnknownValueError:
             speak("I can't hear, please try again")
@@ -99,7 +108,6 @@ def running_backend(listofcommand,
             if opening_command in text_detected:
                 print("I'm ready to help you")
                 speak("I am ready to help you")
-                time.sleep(1)
                 if running_robot(command_list= listofcommand):
                     break
                 rec = KaldiRecognizer(model, 16000) 

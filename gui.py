@@ -2,7 +2,9 @@ import customtkinter as ctk
 import app_function as af
 import json
 import os
+import threading
 filename = "command_list.json"
+saving_data_file = "data.json"
 #input json file 
 def loading_json(user_command, ter_command):
     with open(filename, 'r', encoding= "utf-8") as file:
@@ -75,10 +77,20 @@ def customize_desktop():
             json.dump(current_data, file, ensure_ascii= False, indent= 4)
     def open_json():
         os.startfile(filename)
-
+    #without starting
+    with open(saving_data_file, 'r', encoding= 'utf-8') as file:
+        data_start = json.load(file)
+    start_check = ctk.IntVar(value= data_start['without_start'])
+    def saving_start():
+        with open(saving_data_file, 'r', encoding= 'utf-8') as file:
+            data = json.load(file)
+        data["without_start"] = start_check.get()
+        with open(saving_data_file, 'w', encoding= 'utf-8') as file:
+            json.dump(data, file, ensure_ascii= False, indent= 4)
+    #command_list    
     def open_command_list():
             cmd_list = ctk.CTkToplevel(window)
-            cmd_list.geometry('450x550+200+0')
+            cmd_list.geometry('450x550+200+100')
             cmd_list.title("List of commands")
             cmd_list.configure(fg_color = 'white')
             cmd_list.focus()
@@ -96,24 +108,24 @@ def customize_desktop():
                                     text= f"exiting command --> {cur_data['exiting command']}", 
                                     font= my_font)
             exiting.pack(side = 'top')
-            list_of_command = ctk.CTkFrame(cmd_list,
-                                           fg_color= 'white',
-                                           border_color= 'black')
-            list_of_command.pack(side = 'top')
-            your_command = ctk.CTkLabel(list_of_command,
-                                        text = "YOUR COMMAND",
-                                        font= my_font)
-            your_command.pack(side = 'left', padx = 10)
-            ter_command = ctk.CTkLabel(list_of_command,
-                                       text = "TERMINAL COMMAND",
-                                       font= my_font)
-            ter_command.pack(side = 'right')
-            real_data = {k:v for k,v in cur_data.items() if k not in ['activating command', 'exiting command']}
-            for k,v in real_data.items():
-                key = ctk.CTkLabel(cmd_list, text = f'{k}', font = my_font)
-                key.pack(side = 'left')
-                value = ctk.CTkLabel(cmd_list, text=f'{v}', font= my_font)
-                value.pack(side = 'right')
+            list_of_command = ctk.CTkScrollableFrame(cmd_list,
+                                           border_color= 'black',
+                                           border_width= 2,
+                                           label_text= "LIST OF COMMANDS",
+                                           label_font= my_font)
+            list_of_command.pack(side='top', fill='both', expand=True, padx=10, pady=10)
+            list_of_command.grid_columnconfigure(0, weight=1)
+            list_of_command.grid_columnconfigure(1, weight=1)
+            your_command = ctk.CTkLabel(list_of_command, text="YOUR COMMAND", font=my_font)
+            your_command.grid(row=0, column=0, padx=10, pady=5) 
+            ter_command = ctk.CTkLabel(list_of_command, text="TERMINAL COMMAND", font=my_font)
+            ter_command.grid(row=0, column=1, padx=10, pady=5) 
+            real_data = {k: v for k, v in cur_data.items() if k not in ['activating command', 'exiting command']}
+            for row_idx, (k, v) in enumerate(real_data.items(), start=1):
+                key = ctk.CTkLabel(list_of_command, text=f'{k}', font=my_font)
+                key.grid(row=row_idx, column=0, padx=10, pady=2)
+                value = ctk.CTkLabel(list_of_command, text=f'{v}', font=my_font)
+                value.grid(row=row_idx, column=1, padx=10, pady=2)
 
     #notice
     notice = ctk.CTkLabel(window,
@@ -270,6 +282,22 @@ def customize_desktop():
                                border_color= 'black',
                                command= getting_remove_entry)
 
+    #frame for some settings
+    wt_start_frame = ctk.CTkFrame(window, fg_color= 'white')
+    run_without_start_buttn = ctk.CTkButton(wt_start_frame,
+                                  text= "Save",
+                                  width= 80,
+                                  height= 35,
+                                  corner_radius= 11,
+                                  border_width= 1.5,
+                                  border_color= 'black',
+                                  command= saving_start)
+    run_without_start_tick = ctk.CTkCheckBox(
+        wt_start_frame,
+        text= "Start assistant when opening app without pressing 'Start' button",
+        variable= start_check
+    )
+
     #warning label for remove
     remove_warn = ctk.CTkLabel(remove_frame,
                                text = "Successfully!!",
@@ -351,6 +379,11 @@ def customize_desktop():
     son_frame.pack(side = 'top', anchor = 'w', pady = 10)
     son_content.pack(side = 'left', anchor = 'w', pady = 10, padx = 20)
     son_buttn.pack(side = 'left')
+
+        #run without start
+    wt_start_frame.pack(side = 'top', anchor = 'w')
+    run_without_start_tick.pack(side = 'left')
+    run_without_start_buttn.pack(side = 'left', pady =5)
     
 #button frame
 buttn_frame = ctk.CTkFrame(root, 
@@ -404,5 +437,10 @@ user_guide = ctk.CTkButton(buttn_frame,
                       )
 user_guide.pack(side = "top", pady = 20)
 #for customizing
-
+def check_and_start():
+    with open(saving_data_file, 'r', encoding= "utf-8") as file:
+        data = json.load(file)
+    if data['without_start'] == 1:
+        af.start()
+threading.Thread(target= check_and_start, daemon= True).start()
 root.mainloop()

@@ -41,13 +41,15 @@ my_font = ctk.CTkFont(family= "Segoe UI", size= 20)
 label = ctk.CTkLabel(root, text= "Your personal assistant", font= my_font )
 label.pack(side = "top")
 #Adding buttons
-def customize_desktop():
-    window = ctk.CTkToplevel(root)
-    window.geometry('850x950+800+0')
-    window.title("Customize")
-    window.configure(fg_color = 'white')
-    window.focus()
-    #function to get info
+class customizing_desktop:
+    def __init__(self):
+        self.window = ctk.CTkToplevel(root)
+        
+    def config_desktop(self):
+        self.window.geometry('850x950+800+0')
+        self.window.title("Customize")
+        self.window.configure(fg_color = 'white')
+        self.window.focus()
     def getting_gen_entry():
         cont = gen_entry.get()
         if cont == "":
@@ -58,7 +60,7 @@ def customize_desktop():
     def getting_exit_entry():
         cont = exit_entry.get()
         if cont == "":
-           cont = "stop right now"
+            cont = "stop right now"
         else: 
             loading_json("exiting command", cont)
             exit_entry.delete(0, 'end')
@@ -91,106 +93,85 @@ def customize_desktop():
             json.dump(current_data, file, ensure_ascii= False, indent= 4)
     def open_json():
         os.startfile(filename)
-    #without starting
-    with open(saving_data_file, 'r', encoding= 'utf-8') as file:
-        data_start = json.load(file)
-    start_check = ctk.IntVar(value= data_start['without_start'])
-    def saving_start():
+        #without starting
         with open(saving_data_file, 'r', encoding= 'utf-8') as file:
-            data = json.load(file)
-        data["without_start"] = start_check.get()
-        with open(saving_data_file, 'w', encoding= 'utf-8') as file:
-            json.dump(data, file, ensure_ascii= False, indent= 4)
-    #command_list    
-    def open_command_list():
-            cmd_list = ctk.CTkToplevel(window)
-            cmd_list.geometry('450x550+200+100')
-            cmd_list.title("List of commands")
-            cmd_list.configure(fg_color = 'white')
-            cmd_list.focus()
-            with open(filename, 'r', encoding= 'utf-8') as file:
-                cur_data = json.load(file)
-            open_text = ctk.CTkLabel(cmd_list,
-                                     text= "Opening & Exiting command:",
-                                     font= my_font)
-            open_text.pack(side = "top")
-            activating = ctk.CTkLabel(cmd_list,
-                                      text= f"activating command --> {cur_data['activating command']}",
-                                      font= my_font)
-            activating.pack(side = 'top')
-            exiting = ctk.CTkLabel(cmd_list,
-                                    text= f"exiting command --> {cur_data['exiting command']}", 
-                                    font= my_font)
-            exiting.pack(side = 'top')
-            list_of_command = ctk.CTkScrollableFrame(cmd_list,
-                                           border_color= 'black',
-                                           border_width= 2,
-                                           label_text= "LIST OF COMMANDS",
-                                           label_font= my_font)
-            list_of_command.pack(side='top', fill='both', expand=True, padx=10, pady=10)
-            list_of_command.grid_columnconfigure(0, weight=1)
-            list_of_command.grid_columnconfigure(1, weight=1)
-            your_command = ctk.CTkLabel(list_of_command, text="YOUR COMMAND", font=my_font)
-            your_command.grid(row=0, column=0, padx=10, pady=5) 
-            ter_command = ctk.CTkLabel(list_of_command, text="TERMINAL COMMAND", font=my_font)
-            ter_command.grid(row=0, column=1, padx=10, pady=5) 
-            real_data = {k: v for k, v in cur_data.items() if k not in ['activating command', 'exiting command']}
-            for row_idx, (k, v) in enumerate(real_data.items(), start=1):
-                key = ctk.CTkLabel(list_of_command, text=f'{k}', font=my_font)
-                key.grid(row=row_idx, column=0, padx=10, pady=2)
-                value = ctk.CTkLabel(list_of_command, text=f'{v}', font=my_font)
-                value.grid(row=row_idx, column=1, padx=10, pady=2)
-    customize_desktop.command_list = open_command_list()
-    #notice
-    notice = ctk.CTkLabel(window,
-                          text= "***NOTICE: To know how to add or remove a command, " \
-                          "read this first: ",
-                          text_color= '#FF0000',
-                          font= ctk.CTkFont(
-                              family= "Segoe UI",
-                              size = 20,
-                              weight= 'bold'
-                          ))
+            data_start = json.load(file)
+        start_check = ctk.IntVar(value= data_start['without_start'])
+    def customize_desktop(self):
+        self.config_desktop()
+        self.getting_gen_entry()
+        self.getting_exit_entry()
+        self.getting_add_entry()
+        self.getting_remove_entry()
+        self.open_json()
+        
+        
+        def saving_start():
+            with open(saving_data_file, 'r', encoding= 'utf-8') as file:
+                data = json.load(file)
+            data["without_start"] = start_check.get()
+            with open(saving_data_file, 'w', encoding= 'utf-8') as file:
+                json.dump(data, file, ensure_ascii= False, indent= 4)
+        #command_list    
+        def open_command_list():
+                cmd_list = ctk.CTkToplevel(window)
+                cmd_list.geometry('450x550+200+100')
+                cmd_list.title("List of commands")
+                cmd_list.configure(fg_color = 'white')
+                cmd_list.focus()
+                with open(filename, 'r', encoding= 'utf-8') as file:
+                    cur_data = json.load(file)
+                open_text = ctk.CTkLabel(cmd_list,
+                                        text= "Opening & Exiting command:",
+                                        font= my_font)
+                open_text.pack(side = "top")
+                activating = ctk.CTkLabel(cmd_list,
+                                        text= f"activating command --> {cur_data['activating command']}",
+                                        font= my_font)
+                activating.pack(side = 'top')
+                exiting = ctk.CTkLabel(cmd_list,
+                                        text= f"exiting command --> {cur_data['exiting command']}", 
+                                        font= my_font)
+                exiting.pack(side = 'top')
+                list_of_command = ctk.CTkScrollableFrame(cmd_list,
+                                            border_color= 'black',
+                                            border_width= 2,
+                                            label_text= "LIST OF COMMANDS",
+                                            label_font= my_font)
+                list_of_command.pack(side='top', fill='both', expand=True, padx=10, pady=10)
+                list_of_command.grid_columnconfigure(0, weight=1)
+                list_of_command.grid_columnconfigure(1, weight=1)
+                your_command = ctk.CTkLabel(list_of_command, text="YOUR COMMAND", font=my_font)
+                your_command.grid(row=0, column=0, padx=10, pady=5) 
+                ter_command = ctk.CTkLabel(list_of_command, text="TERMINAL COMMAND", font=my_font)
+                ter_command.grid(row=0, column=1, padx=10, pady=5) 
+                real_data = {k: v for k, v in cur_data.items() if k not in ['activating command', 'exiting command']}
+                for row_idx, (k, v) in enumerate(real_data.items(), start=1):
+                    key = ctk.CTkLabel(list_of_command, text=f'{k}', font=my_font)
+                    key.grid(row=row_idx, column=0, padx=10, pady=2)
+                    value = ctk.CTkLabel(list_of_command, text=f'{v}', font=my_font)
+                    value.grid(row=row_idx, column=1, padx=10, pady=2)
+        #notice
+        notice = ctk.CTkLabel(window,
+                            text= "***NOTICE: To know how to add or remove a command, " \
+                            "read this first: ",
+                            text_color= '#FF0000',
+                            font= ctk.CTkFont(
+                                family= "Segoe UI",
+                                size = 20,
+                                weight= 'bold'
+                            ))
 
-    #frame for generate command
-    gen_frame = ctk.CTkFrame(window, 
-                             bg_color= "transparent",
-                             fg_color= '#FFFFFF' )
-    gen_content = ctk.CTkLabel(window, 
-                               text= "Command to turn the assistant on:",
-                               font= my_font, 
-                               )
-    gen_entry = ctk.CTkEntry(
-                        gen_frame,
-                        placeholder_text="Write a command here", 
-                        width=250,                  
-                        height=40,                  
-                        corner_radius=20,           
-                        border_width=1.5,
-                        border_color="black",       
-                        fg_color="#F0F0F0",         
-                        text_color="black",         
-                        placeholder_text_color="gray" 
-                    )
-    gen_buttn = ctk.CTkButton(gen_frame,
-                              text= "Enter",
-                              width= 80,
-                              height= 35,
-                              corner_radius= 11,
-                              border_width= 1.5,
-                              border_color= 'black',
-                              command= getting_gen_entry)
-
-    #frame for exiting command
-    exit_content = ctk.CTkLabel(window, 
-                                   text= "Command to turn the assistant off:",
-                                   font= my_font, 
-                                   )
-    exit_frame = ctk.CTkFrame(window, 
-                                 bg_color= "transparent",
-                                 fg_color= '#FFFFFF' )
-    exit_entry = ctk.CTkEntry(
-                            exit_frame,
+        #frame for generate command
+        gen_frame = ctk.CTkFrame(window, 
+                                bg_color= "transparent",
+                                fg_color= '#FFFFFF' )
+        gen_content = ctk.CTkLabel(window, 
+                                text= "Command to turn the assistant on:",
+                                font= my_font, 
+                                )
+        gen_entry = ctk.CTkEntry(
+                            gen_frame,
                             placeholder_text="Write a command here", 
                             width=250,                  
                             height=40,                  
@@ -201,82 +182,25 @@ def customize_desktop():
                             text_color="black",         
                             placeholder_text_color="gray" 
                         )
-    exit_buttn = ctk.CTkButton(exit_frame,
-                                  text= "Enter",
-                                  width= 80,
-                                  height= 35,
-                                  corner_radius= 11,
-                                  border_width= 1.5,
-                                  border_color= 'black',
-                                  command= getting_exit_entry)
-    
-    #frame for adding command
-    add_content = ctk.CTkLabel(window, 
-                                   text= "Adding your command:",
-                                   font= my_font, 
-                                   )
-    add_frame = ctk.CTkFrame(window, 
-                                     bg_color= "transparent",
-                                     fg_color= '#FFFFFF' )
-    add_warning = ctk.CTkLabel(window, 
-                                   text= "Successfully!!",
-                                   font= my_font,)
-    sup_content = ctk.CTkLabel(add_frame, 
-                                text= "Your command" + 28 * " " + "Terminal command" ,
-                                font= my_font, 
-                                )
-    add_your_entry = ctk.CTkEntry(
-                                add_frame,
-                                placeholder_text="Write your command here", 
-                                width=250,                  
-                                height=40,                  
-                                corner_radius=20,           
-                                border_width=1.5,
-                                border_color="black",       
-                                fg_color="#F0F0F0",         
-                                text_color="black",         
-                                placeholder_text_color="gray" 
-                            )
-    sep_content = ctk.CTkLabel(add_frame, 
-                                text= ":",
-                                font= ctk.CTkFont(
-                                family= "Consolas",
-                                size= 40,
-                                weight= 'bold'
-                                       ), 
-                                )
-    add_ter_entry = ctk.CTkEntry(
-                                    add_frame,
-                                    placeholder_text="Write terminal command here", 
-                                    width=250,                  
-                                    height=40,                  
-                                    corner_radius=20,           
-                                    border_width=1.5,
-                                    border_color="black",       
-                                    fg_color="#F0F0F0",         
-                                    text_color="black",         
-                                    placeholder_text_color="gray" 
-                                )
-   
-    add_buttn = ctk.CTkButton(add_frame,
-                                      text= "Add",
-                                      width= 80,
-                                      height= 35,
-                                      corner_radius= 11,
-                                      border_width= 1.5,
-                                      border_color= 'black',
-                                      command= getting_add_entry)
-    
-    #frame for removing command
-    remove_content = ctk.CTkLabel(window, 
-                                text= "Remove your command",
-                                       font= my_font, 
-                                )
-    remove_frame = ctk.CTkFrame(window, 
-                            bg_color= "transparent",
-                            fg_color= '#FFFFFF' )
-    remove_entry = ctk.CTkEntry(
-                                remove_frame,
+        gen_buttn = ctk.CTkButton(gen_frame,
+                                text= "Enter",
+                                width= 80,
+                                height= 35,
+                                corner_radius= 11,
+                                border_width= 1.5,
+                                border_color= 'black',
+                                command= getting_gen_entry)
+
+        #frame for exiting command
+        exit_content = ctk.CTkLabel(window, 
+                                    text= "Command to turn the assistant off:",
+                                    font= my_font, 
+                                    )
+        exit_frame = ctk.CTkFrame(window, 
+                                    bg_color= "transparent",
+                                    fg_color= '#FFFFFF' )
+        exit_entry = ctk.CTkEntry(
+                                exit_frame,
                                 placeholder_text="Write a command here", 
                                 width=250,                  
                                 height=40,                  
@@ -287,118 +211,204 @@ def customize_desktop():
                                 text_color="black",         
                                 placeholder_text_color="gray" 
                             )
-    remove_buttn = ctk.CTkButton(remove_frame,
-                               text= "Remove",
-                               width= 80,
-                               height= 35,
-                               corner_radius= 11,
-                               border_width= 1.5,
-                               border_color= 'black',
-                               command= getting_remove_entry)
-
-    #frame for some settings
-    wt_start_frame = ctk.CTkFrame(window, fg_color= 'white')
-    run_without_start_buttn = ctk.CTkButton(wt_start_frame,
-                                  text= "Save",
-                                  width= 80,
-                                  height= 35,
-                                  corner_radius= 11,
-                                  border_width= 1.5,
-                                  border_color= 'black',
-                                  command= saving_start)
-    run_without_start_tick = ctk.CTkCheckBox(
-        wt_start_frame,
-        text= "Start assistant when opening app without pressing 'Start' button",
-        variable= start_check
-    )
-
-    #warning label for remove
-    remove_warn = ctk.CTkLabel(remove_frame,
-                               text = "Successfully!!",
-                               font= my_font)
-
-    #list of command
-    list_frame = ctk.CTkFrame(window, 
-                                bg_color= "transparent",
-                                fg_color= '#FFFFFF' )
-    list_content = ctk.CTkLabel(list_frame, 
-                                    text= "Your list of command:",
+        exit_buttn = ctk.CTkButton(exit_frame,
+                                    text= "Enter",
+                                    width= 80,
+                                    height= 35,
+                                    corner_radius= 11,
+                                    border_width= 1.5,
+                                    border_color= 'black',
+                                    command= getting_exit_entry)
+        
+        #frame for adding command
+        add_content = ctk.CTkLabel(window, 
+                                    text= "Adding your command:",
                                     font= my_font, 
                                     )
-    list_buttn = ctk.CTkButton(list_frame,
-                                   text= "List",
-                                   width= 80,
-                                   height= 35,
-                                   corner_radius= 11,
-                                   border_width= 1.5,
-                                   border_color= 'black',
-                                   command= open_command_list)
+        add_frame = ctk.CTkFrame(window, 
+                                        bg_color= "transparent",
+                                        fg_color= '#FFFFFF' )
+        add_warning = ctk.CTkLabel(window, 
+                                    text= "Successfully!!",
+                                    font= my_font,)
+        sup_content = ctk.CTkLabel(add_frame, 
+                                    text= "Your command" + 28 * " " + "Terminal command" ,
+                                    font= my_font, 
+                                    )
+        add_your_entry = ctk.CTkEntry(
+                                    add_frame,
+                                    placeholder_text="Write your command here", 
+                                    width=250,                  
+                                    height=40,                  
+                                    corner_radius=20,           
+                                    border_width=1.5,
+                                    border_color="black",       
+                                    fg_color="#F0F0F0",         
+                                    text_color="black",         
+                                    placeholder_text_color="gray" 
+                                )
+        sep_content = ctk.CTkLabel(add_frame, 
+                                    text= ":",
+                                    font= ctk.CTkFont(
+                                    family= "Consolas",
+                                    size= 40,
+                                    weight= 'bold'
+                                        ), 
+                                    )
+        add_ter_entry = ctk.CTkEntry(
+                                        add_frame,
+                                        placeholder_text="Write terminal command here", 
+                                        width=250,                  
+                                        height=40,                  
+                                        corner_radius=20,           
+                                        border_width=1.5,
+                                        border_color="black",       
+                                        fg_color="#F0F0F0",         
+                                        text_color="black",         
+                                        placeholder_text_color="gray" 
+                                    )
+    
+        add_buttn = ctk.CTkButton(add_frame,
+                                        text= "Add",
+                                        width= 80,
+                                        height= 35,
+                                        corner_radius= 11,
+                                        border_width= 1.5,
+                                        border_color= 'black',
+                                        command= getting_add_entry)
+        
+        #frame for removing command
+        remove_content = ctk.CTkLabel(window, 
+                                    text= "Remove your command",
+                                        font= my_font, 
+                                    )
+        remove_frame = ctk.CTkFrame(window, 
+                                bg_color= "transparent",
+                                fg_color= '#FFFFFF' )
+        remove_entry = ctk.CTkEntry(
+                                    remove_frame,
+                                    placeholder_text="Write a command here", 
+                                    width=250,                  
+                                    height=40,                  
+                                    corner_radius=20,           
+                                    border_width=1.5,
+                                    border_color="black",       
+                                    fg_color="#F0F0F0",         
+                                    text_color="black",         
+                                    placeholder_text_color="gray" 
+                                )
+        remove_buttn = ctk.CTkButton(remove_frame,
+                                text= "Remove",
+                                width= 80,
+                                height= 35,
+                                corner_radius= 11,
+                                border_width= 1.5,
+                                border_color= 'black',
+                                command= getting_remove_entry)
 
-    #Json file
-    son_frame = ctk.CTkFrame(window, 
+        #frame for some settings
+        wt_start_frame = ctk.CTkFrame(window, fg_color= 'white')
+        run_without_start_buttn = ctk.CTkButton(wt_start_frame,
+                                    text= "Save",
+                                    width= 80,
+                                    height= 35,
+                                    corner_radius= 11,
+                                    border_width= 1.5,
+                                    border_color= 'black',
+                                    command= saving_start)
+        run_without_start_tick = ctk.CTkCheckBox(
+            wt_start_frame,
+            text= "Start assistant when opening app without pressing 'Start' button",
+            variable= start_check
+        )
+
+        #warning label for remove
+        remove_warn = ctk.CTkLabel(remove_frame,
+                                text = "Successfully!!",
+                                font= my_font)
+
+        #list of command
+        list_frame = ctk.CTkFrame(window, 
                                     bg_color= "transparent",
                                     fg_color= '#FFFFFF' )
-    son_content = ctk.CTkLabel(son_frame, 
-                                        text= "Open JSON file to add or remove commands manually:",
+        list_content = ctk.CTkLabel(list_frame, 
+                                        text= "Your list of command:",
                                         font= my_font, 
                                         )
-    son_buttn = ctk.CTkButton(son_frame,
-                                       text= "Open JSON file",
-                                       width= 80,
-                                       height= 35,
-                                       corner_radius= 11,
-                                       border_width= 1.5,
-                                       border_color= 'black',
-                                       command= open_json)
-    #Location for each part
-        
-        #notice label
-    notice.pack(side = 'top', anchor = 'w')
-
-        #gen_command
-    gen_content.pack(side = 'top', anchor = 'w', pady = 10)
-    gen_frame.pack(side = 'top', anchor = 'w', pady = 10)
-    gen_entry.pack(padx = 10,anchor = 'w', side = 'left')
-    gen_buttn.pack(side = 'left')
-
-        #exit_command
-    exit_content.pack(side = 'top', anchor = 'w', pady = 10)
-    exit_frame.pack(side = 'top', anchor = 'w', pady = 10)
-    exit_entry.pack(padx = 10,anchor = 'w', side = 'left')
-    exit_buttn.pack(side = 'left')
-
-        #add command
-    add_content.pack(side = 'top', anchor = 'w', pady = 10)
-    add_frame.pack(side = 'top', anchor = 'w', pady = 10)
-    add_warning.pack_forget()
-    sup_content.pack(side = 'top', anchor = 'w', padx = 60, pady = 10)
-    add_your_entry.pack(padx = 10,anchor = 'w', side = 'left')
-    sep_content.pack(side = 'left',  padx = 10)
-    add_ter_entry.pack(padx = 10,anchor = 'w', side = 'left')
-    add_buttn.pack(side = 'left', padx = 10)
-
-        #remove command
-    remove_content.pack(side = 'top', anchor = 'w', pady = 10)
-    remove_frame.pack(side = 'top', anchor = 'w', pady = 10)
-    remove_entry.pack(padx = 10,anchor = 'w', side = 'left')
-    remove_buttn.pack(side = 'left')
-    remove_warn.pack_forget()
-   
-            #list of command
-    list_frame.pack(side = 'top', anchor = 'w', pady = 10)
-    list_content.pack(side = 'left', anchor = 'w', pady = 10, padx = 20)
-    list_buttn.pack(side = 'left')
+        list_buttn = ctk.CTkButton(list_frame,
+                                    text= "List",
+                                    width= 80,
+                                    height= 35,
+                                    corner_radius= 11,
+                                    border_width= 1.5,
+                                    border_color= 'black',
+                                    command= open_command_list)
 
         #Json file
-    son_frame.pack(side = 'top', anchor = 'w', pady = 10)
-    son_content.pack(side = 'left', anchor = 'w', pady = 10, padx = 20)
-    son_buttn.pack(side = 'left')
+        son_frame = ctk.CTkFrame(window, 
+                                        bg_color= "transparent",
+                                        fg_color= '#FFFFFF' )
+        son_content = ctk.CTkLabel(son_frame, 
+                                            text= "Open JSON file to add or remove commands manually:",
+                                            font= my_font, 
+                                            )
+        son_buttn = ctk.CTkButton(son_frame,
+                                        text= "Open JSON file",
+                                        width= 80,
+                                        height= 35,
+                                        corner_radius= 11,
+                                        border_width= 1.5,
+                                        border_color= 'black',
+                                        command= open_json)
+        #Location for each part
+            
+            #notice label
+        notice.pack(side = 'top', anchor = 'w')
 
-        #run without start
-    wt_start_frame.pack(side = 'top', anchor = 'w')
-    run_without_start_tick.pack(side = 'left')
-    run_without_start_buttn.pack(side = 'left', pady =5)
+            #gen_command
+        gen_content.pack(side = 'top', anchor = 'w', pady = 10)
+        gen_frame.pack(side = 'top', anchor = 'w', pady = 10)
+        gen_entry.pack(padx = 10,anchor = 'w', side = 'left')
+        gen_buttn.pack(side = 'left')
+
+            #exit_command
+        exit_content.pack(side = 'top', anchor = 'w', pady = 10)
+        exit_frame.pack(side = 'top', anchor = 'w', pady = 10)
+        exit_entry.pack(padx = 10,anchor = 'w', side = 'left')
+        exit_buttn.pack(side = 'left')
+
+            #add command
+        add_content.pack(side = 'top', anchor = 'w', pady = 10)
+        add_frame.pack(side = 'top', anchor = 'w', pady = 10)
+        add_warning.pack_forget()
+        sup_content.pack(side = 'top', anchor = 'w', padx = 60, pady = 10)
+        add_your_entry.pack(padx = 10,anchor = 'w', side = 'left')
+        sep_content.pack(side = 'left',  padx = 10)
+        add_ter_entry.pack(padx = 10,anchor = 'w', side = 'left')
+        add_buttn.pack(side = 'left', padx = 10)
+
+            #remove command
+        remove_content.pack(side = 'top', anchor = 'w', pady = 10)
+        remove_frame.pack(side = 'top', anchor = 'w', pady = 10)
+        remove_entry.pack(padx = 10,anchor = 'w', side = 'left')
+        remove_buttn.pack(side = 'left')
+        remove_warn.pack_forget()
     
+                #list of command
+        list_frame.pack(side = 'top', anchor = 'w', pady = 10)
+        list_content.pack(side = 'left', anchor = 'w', pady = 10, padx = 20)
+        list_buttn.pack(side = 'left')
+
+            #Json file
+        son_frame.pack(side = 'top', anchor = 'w', pady = 10)
+        son_content.pack(side = 'left', anchor = 'w', pady = 10, padx = 20)
+        son_buttn.pack(side = 'left')
+
+            #run without start
+        wt_start_frame.pack(side = 'top', anchor = 'w')
+        run_without_start_tick.pack(side = 'left')
+        run_without_start_buttn.pack(side = 'left', pady =5)
+        
 #button frame
 buttn_frame = ctk.CTkFrame(root, 
                            bg_color= "transparent",
@@ -435,7 +445,6 @@ command_list = ctk.CTkButton(buttn_frame,
                       corner_radius= 22, 
                       border_width= 2,
                       border_color= 'black',
-                      command= customize_desktop.command_list()
                       )
 command_list.pack(side = "top", pady = 20)
 customize = ctk.CTkButton(buttn_frame, 
@@ -447,7 +456,7 @@ customize = ctk.CTkButton(buttn_frame,
                       corner_radius= 22, 
                       border_width= 2,
                       border_color= 'black',
-                      command= customize_desktop
+                      command= customizing_desktop.customize_desktop
                       )
 customize.pack(side = "top", pady = 20)
 user_guide = ctk.CTkButton(buttn_frame, 

@@ -17,7 +17,7 @@ if not os.path.exists(saving_file):
     with open(saving_file, 'w', encoding= 'utf-8') as file:
         json.dump(init, file, ensure_ascii= False, indent= 4 )
 #loading json file
-def start():
+def start(call_to_stop):
     with open(filename, 'r', encoding= "utf-8") as file:
         data = json.load(file)
     begin = data["activating command"]
@@ -31,5 +31,6 @@ def start():
     print(cmd_list)
     voice.running_backend(opening_command = begin,
                           exiting_command= exit,
-                          listofcommand= cmd_list)
+                          listofcommand= cmd_list,
+                          calltostop= call_to_stop)
 

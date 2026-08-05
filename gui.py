@@ -3,8 +3,22 @@ import app_function as af
 import json
 import os
 import threading
+import voice
 filename = "command_list.json"
 saving_data_file = "data.json"
+#start_stop function
+call_to_stop = 1
+def start_stop():
+    global call_to_stop
+    if call_to_stop:
+        call_to_stop = 0
+        start.configure(text = "Stop")
+        threading.Thread(target= lambda: af.start(call_to_stop = 0), daemon= True).start()
+    else:
+        call_to_stop = 1
+        start.configure(text = "Start")
+        voice.is_begin = True
+        threading.Thread(target= lambda: af.start(call_to_stop = 1), daemon= True).start()
 #input json file 
 def loading_json(user_command, ter_command):
     with open(filename, 'r', encoding= "utf-8") as file:
@@ -126,7 +140,7 @@ def customize_desktop():
                 key.grid(row=row_idx, column=0, padx=10, pady=2)
                 value = ctk.CTkLabel(list_of_command, text=f'{v}', font=my_font)
                 value.grid(row=row_idx, column=1, padx=10, pady=2)
-
+    customize_desktop.command_list = open_command_list()
     #notice
     notice = ctk.CTkLabel(window,
                           text= "***NOTICE: To know how to add or remove a command, " \
@@ -399,9 +413,19 @@ start = ctk.CTkButton(buttn_frame,
                       corner_radius= 22,
                       border_width= 2, 
                       border_color= 'black',
-                      command= af.start
+                      command= start_stop
                       )
+
 start.pack(side = "top", pady = 20)
+def set_start():
+    global call_to_stop
+    if voice.is_start:
+        start.configure(text = 'Start')
+        call_to_stop = 1
+        voice.is_start = 0
+        voice.is_begin = True
+    root.after(200, set_start)
+set_start()
 command_list = ctk.CTkButton(buttn_frame, 
                       text= "Command list", 
                       text_color= "#FFFFFF",
@@ -410,7 +434,8 @@ command_list = ctk.CTkButton(buttn_frame,
                       height= 44,
                       corner_radius= 22, 
                       border_width= 2,
-                      border_color= 'black'
+                      border_color= 'black',
+                      command= customize_desktop.command_list()
                       )
 command_list.pack(side = "top", pady = 20)
 customize = ctk.CTkButton(buttn_frame, 
@@ -441,6 +466,7 @@ def check_and_start():
     with open(saving_data_file, 'r', encoding= "utf-8") as file:
         data = json.load(file)
     if data['without_start'] == 1:
-        af.start()
+        start.configure(state = 'disabled')
+        af.start(call_to_stop= 0)
 threading.Thread(target= check_and_start, daemon= True).start()
 root.mainloop()

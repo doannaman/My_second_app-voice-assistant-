@@ -13,7 +13,8 @@ if not os.path.exists(filename):
         json.dump(initial, file, ensure_ascii= False, indent= 4 )
     print("đã khởi tạo file thành công")
 if not os.path.exists(saving_file):
-    init = {"without_start" : 0}
+    init = {"without_start" : 0,
+            "running_in_background": 0}
     with open(saving_file, 'w', encoding= 'utf-8') as file:
         json.dump(init, file, ensure_ascii= False, indent= 4 )
 #loading json file

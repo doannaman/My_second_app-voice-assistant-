@@ -14,11 +14,12 @@ if not os.path.exists(filename):
     print("đã khởi tạo file thành công")
 if not os.path.exists(saving_file):
     init = {"without_start" : 0,
-            "running_in_background": 0}
+            "running_in_background": 0,
+            "running_behind" : 0}
     with open(saving_file, 'w', encoding= 'utf-8') as file:
         json.dump(init, file, ensure_ascii= False, indent= 4 )
 #loading json file
-def start(call_to_stop):
+def start():
     with open(filename, 'r', encoding= "utf-8") as file:
         data = json.load(file)
     begin = data["activating command"]
@@ -33,5 +34,5 @@ def start(call_to_stop):
     voice.running_backend(opening_command = begin,
                           exiting_command= exit,
                           listofcommand= cmd_list,
-                          calltostop= call_to_stop)
+                          )
 

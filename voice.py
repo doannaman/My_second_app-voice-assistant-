@@ -7,7 +7,7 @@ import queue
 import json
 from vosk import Model, KaldiRecognizer
 import sounddevice as sd
-import customtkinter as ctk
+call_to_stop = 1
 #setting for using speech_recognition
 current_dir = os.path.dirname(os.path.abspath(__file__))
 flac_path = os.path.join(current_dir, "flac.exe")
@@ -86,15 +86,11 @@ def running_robot(command_list):
         except spr.RequestError as e:
             print(f"Error to connect API: {e}")
 def running_backend(listofcommand,
-                    calltostop,
                     opening_command = "waking up",
                     exiting_command = "stop right now"):
     global is_begin
     global is_running
     global is_start
-    if calltostop:
-        speak("thank you")
-        return None
     rec = KaldiRecognizer(model, 16000)
     with sd.RawInputStream(samplerate=16000, blocksize=8000, dtype='int16',
                             channels=1, callback=audio_callback):
@@ -121,7 +117,7 @@ def running_backend(listofcommand,
                 rec = KaldiRecognizer(model, 16000) 
                 with q.mutex:
                     q.queue.clear()
-            elif exiting_command in text_detected:
+            elif exiting_command in text_detected or call_to_stop:
                 is_start = 1
                 print('thank you')
                 speak("thank you")

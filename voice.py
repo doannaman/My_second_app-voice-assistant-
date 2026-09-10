@@ -5,15 +5,22 @@ import speech_recognition as spr
 import pyttsx3
 import queue
 import json
+import sys
 from vosk import Model, KaldiRecognizer
 import sounddevice as sd
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 call_to_stop = 1
 #setting for using speech_recognition
 current_dir = os.path.dirname(os.path.abspath(__file__))
-flac_path = os.path.join(current_dir, "flac.exe")
+flac_path = resource_path(os.path.join(current_dir, "flac.exe"))
 spr.audio.get_flac_converter = lambda: flac_path
 #setting for using vosk
-model_path = os.path.join(current_dir, 'model')
+model_path = resource_path(os.path.join(current_dir, 'model'))
 model = Model(model_path)
 #ini queue
 q = queue.Queue()
@@ -63,7 +70,7 @@ def running_robot(command_list):
         with mic:
             audio = robot_ear.listen(mic)
         try:
-            text = robot_ear.recognize_google(audio).lower()
+            text = robot_ear.recognize_google(audio,language="vi-VN").lower()
             print(f"you say: '{text}'")
             if not command_list:
                 speak("your command list is blank, add commands first")

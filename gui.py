@@ -6,13 +6,20 @@ import threading
 import voice
 from PIL import Image, ImageTk
 import pystray
-saving_data_file = "data.json"
+import sys
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+saving_data_file = resource_path("data.json")
 class Mainapp(ctk.CTk):
     def __init__(self):
         super().__init__()
         ctk.set_appearance_mode('light')
         ctk.set_default_color_theme('blue')
-        self.iconbitmap('picture\main_image.ico')
+        self.iconbitmap(resource_path('picture\main_image.ico'))
         self.my_font = ctk.CTkFont(family= "Segoe UI", size= 20)
         self.title("Customizable Assistant")
         self.geometry('340x410')
@@ -84,7 +91,7 @@ class Mainapp(ctk.CTk):
     def turn_on_hide_window(self):
         self.protocol("WM_DELETE_WINDOW", self.using_hide_window)
     def using_hide_window(self):
-        image = Image.open(r"picture\main_image.png")
+        image = Image.open(resource_path(r"picture\main_image.png"))
         self.withdraw()
         menu = (
             pystray.MenuItem("Mở ứng dụng", self.show_window, default=True),
@@ -138,12 +145,12 @@ class Mainapp(ctk.CTk):
 class customizing_desktop(ctk.CTkToplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.filename = "command_list.json"
+        self.filename = resource_path("command_list.json")
         self.geometry('850x950+800+0')
         self.title("Customize")
         self.configure(fg_color = 'white')
         self.focus()
-        self.iconbitmap('picture\customizing.ico')
+        self.iconbitmap(resource_path('picture\customizing.ico'))
         self.my_font = ctk.CTkFont(family= "Segoe UI", size= 20)
         with open(saving_data_file, 'r', encoding= 'utf-8') as file:
             data_start = json.load(file)
@@ -532,9 +539,9 @@ class open_command_list(ctk.CTkToplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.geometry('450x550+200+100')
-        self.filename = "command_list.json"
+        self.filename = resource_path("command_list.json")
         self.title("List of commands")
-        self.iconbitmap('picture\command_list.ico')
+        self.iconbitmap(resource_path('picture\command_list.ico'))
         self.my_font = ctk.CTkFont(family= "Segoe UI", size= 20)
         self.configure(fg_color = 'white')
         self.focus()
@@ -574,7 +581,7 @@ class user_guide(ctk.CTkToplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.geometry('1650x1050+0+0')
-        self.iconbitmap(r'picture\user_guide.ico')
+        self.iconbitmap(resource_path(r'picture\user_guide.ico'))
         self.title('User guide')
         self.my_font = ctk.CTkFont(family= "Segoe UI", size= 20, weight= 'bold')
         self.l_font = ctk.CTkFont(family= "Segoe UI", size= 14)
@@ -615,20 +622,20 @@ class user_guide(ctk.CTkToplevel):
         "create another original file for you", font = self.other_font)
         self.some_setting = ctk.CTkLabel(self.scroll_frame, text = "you can also see some settings in the bottom, I think you can easily understand them or you can test these settings," \
         "remeber to press 'save' button and restart the app to apply the changes.",font = self.other_font)
-        self.open_image = ctk.CTkImage(light_image= Image.open(r'picture\open_app.png'),
-                                  dark_image= Image.open(r'picture\open_app.png'),
+        self.open_image = ctk.CTkImage(light_image= Image.open(resource_path(r'picture\open_app.png')),
+                                  dark_image= Image.open(resource_path(r'picture\open_app.png')),
                                   size= (592,226))
         self.open_img = ctk.CTkLabel(self.scroll_frame, image= self.open_image, text= '')
-        self.close_image = ctk.CTkImage(light_image= Image.open(r'picture\close_app.png'),
-                                  dark_image= Image.open(r'picture\close_app.png'),
+        self.close_image = ctk.CTkImage(light_image= Image.open(resource_path(r'picture\close_app.png')),
+                                  dark_image= Image.open(resource_path(r'picture\close_app.png')),
                                   size= (592,226))
         self.close_img = ctk.CTkLabel(self.scroll_frame, image= self.close_image, text= '')
-        self.remove_image = ctk.CTkImage(light_image= Image.open(r'picture\remove.png'),
-                                  dark_image= Image.open(r'picture\remove.png'),
+        self.remove_image = ctk.CTkImage(light_image= Image.open(resource_path(r'picture\remove.png')),
+                                  dark_image= Image.open(resource_path(r'picture\remove.png')),
                                   size= (592,226))
         self.remove_img = ctk.CTkLabel(self.scroll_frame, image= self.remove_image, text= '')
-        self.add_image = ctk.CTkImage(light_image= Image.open(r'picture\add.png'),
-                                  dark_image= Image.open(r'picture\add.png'),
+        self.add_image = ctk.CTkImage(light_image= Image.open(resource_path(r'picture\add.png')),
+                                  dark_image= Image.open(resource_path(r'picture\add.png')),
                                   size= (592,226))
         self.add_img = ctk.CTkLabel(self.scroll_frame, image= self.add_image, text= '')
         self.label.pack(side = 'top', pady = 5, anchor = 'w')

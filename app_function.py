@@ -1,8 +1,15 @@
 import voice
 import json
 import os
-filename = "command_list.json"
-saving_file = "data.json"
+import sys
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+filename = resource_path("command_list.json")
+saving_file = resource_path("data.json")
 #initializing json file
 if not os.path.exists(filename):
     initial = {

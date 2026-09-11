@@ -18,9 +18,10 @@ This application is a customizable, terminal-based personal voice assistant desi
 * **Continuous Optimization:** General architectural improvements and updates to enhance overall performance.
 
 ---
-**Installation:** 
+## Installation 
 * Open the realease and download the app.zip file
 * Unzip the file and run the file .exe
+  
 **📖 Getting Started:** Please ensure you read the user guide carefully to set up your custom commands before using this application.
 
 > **Disclaimer:** This project was developed primarily for educational purposes as part of my programming learning journey. While it is functional and handles custom tasks well, it is a lightweight tool and is not intended to directly compete with advanced, commercial AI models like Google Assistant.

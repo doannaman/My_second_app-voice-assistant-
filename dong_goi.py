@@ -4,7 +4,7 @@ import os
 vosk_path = os.path.dirname(vosk.__file__)
 PyInstaller.__main__.run([
     'gui.py',                          
-    '--name=PhanMemCuaToi',            
+    '--name=Voice_assistant',            
     '--onedir',                         
     
     '--add-data=model;model',

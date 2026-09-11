@@ -70,7 +70,7 @@ def running_robot(command_list):
         with mic:
             audio = robot_ear.listen(mic)
         try:
-            text = robot_ear.recognize_google(audio,language="vi-VN").lower()
+            text = robot_ear.recognize_google(audio).lower()
             print(f"you say: '{text}'")
             if not command_list:
                 speak("your command list is blank, add commands first")
